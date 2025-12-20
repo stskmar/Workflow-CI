@@ -42,9 +42,9 @@ jobs:
         run: |
           python MLProject/modelling.py
 
-      - name: Get latest RUN_ID
+      - name: Get RUN_ID from mlruns folder
         run: |
-          RUN_ID=$(mlflow runs list --max-results 1 --output csv | tail -n 1 | cut -d',' -f1)
+          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
           echo "RUN_ID=$RUN_ID"
           echo "$RUN_ID" > run_id.txt
 

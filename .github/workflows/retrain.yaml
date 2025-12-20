@@ -42,19 +42,9 @@ jobs:
         run: |
           python MLProject/modelling.py
 
-      - name: Get MLflow EXPERIMENT_ID
-        run: |
-          EXP_ID=$(mlflow experiments list \
-            --output csv | grep ci-retrain | head -n 1 | cut -d',' -f1)
-          echo "EXPERIMENT_ID=$EXP_ID"
-          echo "$EXP_ID" > experiment_id.txt
-
       - name: Get latest RUN_ID
         run: |
-          RUN_ID=$(mlflow runs list \
-            --experiment-id $(cat experiment_id.txt) \
-            --max-results 1 \
-            --output csv | tail -n 1 | cut -d',' -f1)
+          RUN_ID=$(mlflow runs list --max-results 1 --output csv | tail -n 1 | cut -d',' -f1)
           echo "RUN_ID=$RUN_ID"
           echo "$RUN_ID" > run_id.txt
 

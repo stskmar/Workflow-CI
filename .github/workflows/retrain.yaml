@@ -42,15 +42,21 @@ jobs:
         run: |
           python MLProject/modelling.py
 
-      - name: Get MLflow RUN_ID
+      - name: Get MLflow EXPERIMENT_ID
         run: |
-          mlflow runs list \
-            --experiment-name ci-retrain \
+          EXP_ID=$(mlflow experiments list \
+            --output csv | grep ci-retrain | head -n 1 | cut -d',' -f1)
+          echo "EXPERIMENT_ID=$EXP_ID"
+          echo "$EXP_ID" > experiment_id.txt
+
+      - name: Get latest RUN_ID
+        run: |
+          RUN_ID=$(mlflow runs list \
+            --experiment-id $(cat experiment_id.txt) \
             --max-results 1 \
-            --output-format csv \
-            | tail -n 1 \
-            | cut -d, -f1 > run_id.txt
-          cat run_id.txt
+            --output csv | tail -n 1 | cut -d',' -f1)
+          echo "RUN_ID=$RUN_ID"
+          echo "$RUN_ID" > run_id.txt
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

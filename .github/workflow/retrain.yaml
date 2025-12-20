@@ -1,4 +1,4 @@
-name: CI Retrain Model (Advance)
+name: CI Retrain Model
 
 on: [push]
 

@@ -2,10 +2,15 @@ name: CI Retrain Model
 
 on: [push]
 
+
 jobs:
   train-and-build:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        shell: bash -l {0}
+        
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3

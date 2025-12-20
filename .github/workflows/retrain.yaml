@@ -19,7 +19,6 @@ jobs:
         with:
           python-version: "3.9"
 
-      # Set up conda environment
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:

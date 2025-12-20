@@ -19,14 +19,9 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
-      - name: Debug structure
+      - name: Run MLflow Project
         run: |
-          ls -R .
-
-      
-      #- name: Run MLflow Project
-      #  run: |
-      #    mlflow run MLProject
+          mlflow run MLProject
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

@@ -1,9 +1,6 @@
 name: CI Retrain Model (Advance)
 
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:
+on: [push]
 
 jobs:
   train-and-build:

@@ -1,0 +1,45 @@
+name: CI Retrain Model
+
+on: [push]
+
+jobs:
+  train-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4 
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          pip install mlflow scikit-learn pandas numpy
+
+      - name: Run MLflow Project
+        run: |
+          mlflow run MLProject
+
+      - name: Upload MLflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-artifacts
+          path: mlruns/
+
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+            -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build Docker Image with MLflow
+        run: |
+          mlflow build-docker \
+            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
+            MLProject
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow

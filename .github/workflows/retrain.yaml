@@ -40,7 +40,6 @@ jobs:
         run: |
           mlflow run MLProject --env-manager=local
 
-      # Get the latest run ID and upload artifacts
       - name: Get MLflow RUN_ID
         run: |
           mlflow runs list \

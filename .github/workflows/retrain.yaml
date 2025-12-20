@@ -31,8 +31,12 @@ jobs:
 
       - name: Install dependency
         run: |
-          pip install mlflow scikit-learn pandas numpy
+          pip install scikit-learn pandas numpy
 
+      - name: Install MLflow
+        run: |
+          pip install --upgrade "mlflow>=2.9.0"
+          
       - name: Run MLflow Project
         run: |
           mlflow run MLProject

@@ -2,6 +2,9 @@ name: CI Retrain Model
 
 on: [push]
 
+env:
+  MLFLOW_TRACKING_URI: file:./mlruns
+
 jobs:
   train-and-build:
     runs-on: ubuntu-latest
@@ -33,25 +36,25 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
-      # Train the model using MLflow
       - name: Run MLflow Project
         env:
           MLFLOW_EXPERIMENT_NAME: ci-retrain
+        run: mlflow run MLProject --env-manager=local
+
+      - name: Get MLflow RUN_ID
+        env:
           MLFLOW_TRACKING_URI: file:./mlruns
         run: |
-          mlflow run MLProject --env-manager=local
-
-      # Get the latest run ID and upload artifacts
-      - name: Get MLflow RUN_ID
-        run: |
           mlflow runs list \
-            --experiment-name ci_experiment \
+            --experiment-name ci-retrain \
             --max-results 1 \
             --output-format csv \
             | tail -n 1 \
             | cut -d, -f1 > run_id.txt
 
+          echo "RUN_ID:"
           cat run_id.txt
+
       
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

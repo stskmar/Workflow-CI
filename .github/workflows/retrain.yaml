@@ -20,11 +20,9 @@ jobs:
         with:
           auto-update-conda: true
           python-version: 3.9
-          activate-environment: base
-          use-only-tar-bz2: true
 
       - name: Verify conda
-        run: conda --version     
+        run: conda --version
 
       - name: Install dependencies
         run: |

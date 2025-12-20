@@ -1,12 +1,8 @@
-import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import mlflow
 import mlflow.sklearn
-
-run_id = os.environ.get("MLFLOW_RUN_ID")
-mlflow.start_run(run_id=run_id)
 
 # Load data
 df = pd.read_csv("preprocessing/bank_clean.csv")

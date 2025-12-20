@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
+      # Train the model using MLflow
       - name: Run MLflow Project
         env:
           MLFLOW_EXPERIMENT_NAME: ci-retrain
@@ -40,6 +41,7 @@ jobs:
         run: |
           mlflow run MLProject --env-manager=local
 
+      # Get the latest run ID and upload artifacts
       - name: Get MLflow RUN_ID
         run: |
           mlflow runs list \

@@ -19,6 +19,7 @@ jobs:
         with:
           python-version: "3.9"
 
+      # Set up conda environment
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -41,6 +42,15 @@ jobs:
         with:
           name: mlflow-artifacts
           path: mlruns/
+
+      - name: Debug Docker secrets
+        run: |
+          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "TOKEN IS EMPTY"
+            exit 1
+          else
+            echo "TOKEN EXISTS"
+          fi          
 
       - name: Login to Docker Hub
         run: |

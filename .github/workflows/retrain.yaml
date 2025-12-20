@@ -35,7 +35,12 @@ jobs:
 
       - name: Run MLflow Project
         run: |
-          mlflow run MLProject
+          mlflow run MLProject --env-manager=local | tee mlflow_output.txt
+
+      - name: Extract MLflow RUN_ID
+        run: |
+          grep -oE "run_id='[a-f0-9]+'" mlflow_output.txt | head -n 1 | cut -d"'" -f2 > run_id.txt
+          cat run_id.txt
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
@@ -60,8 +65,8 @@ jobs:
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
-            MLProject
+            --model-uri runs:/$(cat run_id.txt)/model \
+            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
 
       - name: Push Docker Image
         run: |

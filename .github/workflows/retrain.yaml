@@ -36,10 +36,12 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
-      - name: Run MLflow Project
+      - name: Train model with MLflow
         env:
+          MLFLOW_TRACKING_URI: file:./mlruns
           MLFLOW_EXPERIMENT_NAME: ci-retrain
-        run: mlflow run MLProject --env-manager=local
+        run: |
+          python MLProject/modelling.py
 
       - name: Get MLflow RUN_ID
         run: |

@@ -1,8 +1,12 @@
+import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import mlflow
 import mlflow.sklearn
+
+run_id = os.environ.get("MLFLOW_RUN_ID")
+mlflow.start_run(run_id=run_id)
 
 # Load data
 df = pd.read_csv("preprocessing/bank_clean.csv")
@@ -22,9 +26,8 @@ model = RandomForestClassifier(
 model.fit(X_train, y_train)
 accuracy = model.score(X_test, y_test)
 
-with mlflow.start_run(nested=True):
-    mlflow.log_param("n_estimators", 100)
-    mlflow.log_metric("accuracy", accuracy)
-    mlflow.sklearn.log_model(model, "model")
+mlflow.log_param("n_estimators", 100)
+mlflow.log_metric("accuracy", accuracy)
+mlflow.sklearn.log_model(model, "model")
 
 print(f"Test Accuracy: {accuracy:.4f}")

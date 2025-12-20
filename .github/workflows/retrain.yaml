@@ -31,12 +31,8 @@ jobs:
 
       - name: Install dependency
         run: |
-          pip install scikit-learn pandas numpy
+          pip install mlflow scikit-learn pandas numpy
 
-      - name: Install MLflow
-        run: |
-          pip install --upgrade "mlflow>=2.9.0"
-          
       - name: Run MLflow Project
         run: |
           mlflow run MLProject
@@ -63,7 +59,7 @@ jobs:
 
       - name: Build Docker Image with MLflow
         run: |
-          mlflow build-docker \
+          mlflow models build-docker \
             --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
             MLProject
 

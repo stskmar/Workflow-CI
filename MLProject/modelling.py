@@ -4,10 +4,10 @@ from sklearn.ensemble import RandomForestClassifier
 import mlflow
 import mlflow.sklearn
 
-# Start a fresh run (SAFE)
+mlflow.set_experiment("ci-retrain")
+
 with mlflow.start_run():
-    # Load data
-    df = pd.read_csv("preprocessing/bank_clean.csv")
+    df = pd.read_csv("MLProject/preprocessing/bank_clean.csv")
 
     X = df.drop("y", axis=1)
     y = df["y"]
@@ -16,16 +16,13 @@ with mlflow.start_run():
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    model = RandomForestClassifier(
-        n_estimators=100,
-        random_state=42
-    )
-
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
+
     accuracy = model.score(X_test, y_test)
 
     mlflow.log_param("n_estimators", 100)
     mlflow.log_metric("accuracy", accuracy)
     mlflow.sklearn.log_model(model, "model")
 
-    print(f"Test Accuracy: {accuracy:.4f}")
+    print(f"Accuracy: {accuracy}")

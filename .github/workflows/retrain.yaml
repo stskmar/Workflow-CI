@@ -72,7 +72,7 @@ jobs:
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --model-uri runs:/$(cat mlruns/latest_run_id.txt)/model \
+            --build-arg MODEL_URI=runs:/$(cat mlruns/latest_run_id.txt)/model \
             --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
 
       - name: Push Docker Image
@@ -83,7 +83,7 @@ jobs:
         run: |
           docker build \
             -f Dockerfile.inference \
-            --model-uri runs:/$(cat mlruns/latest_run_id.txt)/model \
+            --build-arg MODEL_URI=runs:/$(cat mlruns/latest_run_id.txt)/model \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference .
 
       - name: Push inference image

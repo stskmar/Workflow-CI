@@ -2,8 +2,20 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
+ARG MODEL_URI
+
 COPY requirements_inference.txt .
 RUN pip install --no-cache-dir -r requirements_inference.txt
+
+RUN python - <<EOF
+import mlflow
+mlflow.artifacts.download_artifacts(
+    artifact_uri="${MODEL_URI}",
+    dst_path="/app/model"
+)
+EOF
+
+ENV MODEL_PATH=/app/model
 
 COPY inference.py .
 COPY prometheus_exporter.py .

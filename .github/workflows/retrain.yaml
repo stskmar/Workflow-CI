@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: "3.9"
 
+      # conda setup
       - name: Set up Miniconda
         uses: conda-incubator/setup-miniconda@v3
         with:

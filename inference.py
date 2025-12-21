@@ -10,8 +10,9 @@ import mlflow.pyfunc
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns"))
 
 model = mlflow.pyfunc.load_model(
-    "runs:/<RUN_ID>/model"
+    model_uri="models:/workflow-ci-mlflow/Production"
 )
+
 app = FastAPI()
 
 REQUEST_COUNT = Counter("inference_requests_total", "Total inference requests")

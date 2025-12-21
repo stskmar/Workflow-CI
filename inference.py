@@ -4,9 +4,14 @@ from fastapi import FastAPI
 from prometheus_client import Counter, Histogram, Gauge, generate_latest
 from prometheus_client import CONTENT_TYPE_LATEST
 import pandas as pd
+import os
+import mlflow.pyfunc
 
-model = mlflow.pyfunc.load_model("models/model")
+mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns"))
 
+model = mlflow.pyfunc.load_model(
+    "runs:/<RUN_ID>/model"
+)
 app = FastAPI()
 
 REQUEST_COUNT = Counter("inference_requests_total", "Total inference requests")

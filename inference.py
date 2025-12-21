@@ -7,11 +7,15 @@ import pandas as pd
 import os
 import mlflow.pyfunc
 
+RUN_ID = os.getenv("MLFLOW_RUN_ID")
+
+if RUN_ID is None:
+    raise RuntimeError("MLFLOW_RUN_ID environment variable not set")
+
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns"))
 
-# Load the model from MLflow Model Registry
 model = mlflow.pyfunc.load_model(
-    model_uri="models:/workflow-ci-mlflow/Production"
+    model_uri=f"runs:/{RUN_ID}/model"
 )
 
 app = FastAPI()

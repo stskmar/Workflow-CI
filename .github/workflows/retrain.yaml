@@ -42,22 +42,17 @@ jobs:
         run: |
           python MLProject/modelling.py
 
-      - name: Save latest RUN_ID
+      - name: Get RUN_ID from mlruns folder
         run: |
-          echo "Listing mlruns content:"
-          ls -R mlruns || echo "mlruns not found"
-
-          EXP_ID=$(ls -d mlruns/* | head -n 1 | xargs basename)
-          RUN_ID=$(ls -td mlruns/$EXP_ID/* | head -n 1 | xargs basename)
-
-          echo "Latest RUN_ID=$RUN_ID"
-          echo "$RUN_ID" > mlruns/latest_run_id.txt
+          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
+          echo "RUN_ID=$RUN_ID"
+          echo "$RUN_ID" > run_id.txt
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mlflow-artifacts
-          path: mlruns/ 
+          path: mlruns/
 
       - name: Debug Docker secrets
         run: |
@@ -76,7 +71,7 @@ jobs:
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --model-uri runs:/$(cat mlruns/latest_run_id.txt)/model \
+            --model-uri runs:/$(cat run_id.txt)/model \
             --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
 
       - name: Push Docker Image
@@ -87,10 +82,9 @@ jobs:
         run: |
           docker build \
             -f Dockerfile.inference \
-            --build-arg MODEL_URI=runs:/$(cat mlruns/latest_run_id.txt)/model \
+            --model-uri runs:/$(cat run_id.txt)/model \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference .
 
       - name: Push inference image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference
-

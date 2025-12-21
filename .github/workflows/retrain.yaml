@@ -78,13 +78,13 @@ jobs:
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
 
-      - name: Build Inference Image
+      - name: Build inference image
         run: |
           docker build \
             -f Dockerfile.inference \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow-inference .
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference .
 
-      - name: Push Inference Image
+      - name: Push inference image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow-inference
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference
 

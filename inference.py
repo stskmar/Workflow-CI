@@ -18,9 +18,9 @@ async def lifespan(app: FastAPI):
     tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns")
     mlflow.set_tracking_uri(tracking_uri)
 
-    latest_file = Path("/mlruns/run_id.txt")
+    latest_file = Path("/mlruns/latest_run_id.txt")
     if not latest_file.exists():
-        raise RuntimeError("run_id.txt not found")
+        raise RuntimeError("latest_run_id.txt not found")
 
     run_id = latest_file.read_text().strip()
     print(f"[LIFESPAN] Using latest run_id={run_id}")

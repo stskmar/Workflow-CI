@@ -44,11 +44,15 @@ jobs:
 
       - name: Save latest RUN_ID
         run: |
-          EXP_ID=$(ls mlruns | head -n 1)
-          RUN_ID=$(ls -td mlruns/$EXP_ID/* | head -n 1 | xargs basename)
+          EXP_ID=$(ls -d mlruns/[0-9]* | head -n 1 | xargs basename)
+          RUN_ID=$(ls -d mlruns/$EXP_ID/*/ \
+            | grep -v meta.yaml \
+            | sed 's:/$::' \
+            | xargs -n1 basename \
+            | head -n 1)
           echo "$RUN_ID" > mlruns/latest_run_id.txt
           echo "Latest RUN_ID=$RUN_ID"
-          
+
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
         with:

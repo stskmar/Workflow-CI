@@ -9,6 +9,7 @@ import mlflow.pyfunc
 
 mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns"))
 
+# Load the model from MLflow Model Registry
 model = mlflow.pyfunc.load_model(
     model_uri="models:/workflow-ci-mlflow/Production"
 )

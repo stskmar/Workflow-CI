@@ -42,12 +42,11 @@ jobs:
         run: |
           python MLProject/modelling.py
 
-      - name: Save latest RUN_ID
+      - name: Get RUN_ID from mlruns folder
         run: |
-          EXP_ID=$(ls mlruns | head -n 1)
-          RUN_ID=$(ls -td mlruns/$EXP_ID/* | head -n 1 | xargs basename)
-          echo "$RUN_ID" > mlruns/latest_run_id.txt
-          echo "Latest RUN_ID=$RUN_ID"
+          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
+          echo "RUN_ID=$RUN_ID"
+          echo "$RUN_ID" > latest_run_id.txt
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

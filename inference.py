@@ -15,17 +15,17 @@ model = None  # global, diisi saat startup
 async def lifespan(app: FastAPI):
     global model
 
-    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:/mlruns")
+    tracking_uri = os.getenv("MLFLOW_TRACKING_URI", "file:./mlruns")
     mlflow.set_tracking_uri(tracking_uri)
 
-    latest_file = Path("/mlruns/run_id.txt")
+    latest_file = Path("./mlruns/run_id.txt")
     if not latest_file.exists():
         raise RuntimeError("run_id.txt not found")
 
     run_id = latest_file.read_text().strip()
     print(f"[LIFESPAN] Using latest run_id={run_id}")
 
-    model = mlflow.pyfunc.load_model(f"runs:/{run_id}/model")
+    model = mlflow.pyfunc.load_model(f"runs:./{run_id}/model")
     print("[LIFESPAN] Model loaded successfully")
 
     yield

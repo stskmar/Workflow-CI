@@ -1,0 +1,89 @@
+name: CI Retrain Model
+
+on: [push]
+
+env:
+  MLFLOW_TRACKING_URI: file:./mlruns
+
+jobs:
+  train-and-build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4 
+        with:
+          python-version: "3.9"
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-update-conda: true
+          python-version: 3.9
+
+      - name: Verify conda
+        run: conda --version
+
+      - name: Install dependency
+        run: |
+          pip install mlflow scikit-learn pandas numpy
+
+      - name: Train model with MLflow
+        env:
+          MLFLOW_TRACKING_URI: file:./mlruns
+          MLFLOW_EXPERIMENT_NAME: ci-retrain
+        run: |
+          python MLProject/modelling.py
+
+      - name: Get RUN_ID from mlruns folder
+        run: |
+          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
+          echo "RUN_ID=$RUN_ID"
+          echo "$RUN_ID" > run_id.txt
+
+      - name: Upload MLflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-artifacts
+          path: mlruns/
+
+      - name: Debug Docker secrets
+        run: |
+          if [ -z "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
+            echo "TOKEN IS EMPTY"
+            exit 1
+          else
+            echo "TOKEN EXISTS"
+          fi          
+
+      - name: Login to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
+            -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+
+      - name: Build Docker Image with MLflow
+        run: |
+          mlflow models build-docker \
+            --model-uri runs:/$(cat run_id.txt)/model \
+            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
+
+      - name: Build inference image
+        run: |
+          docker build \
+            -f Dockerfile.inference \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference .
+
+      - name: Push inference image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-inference

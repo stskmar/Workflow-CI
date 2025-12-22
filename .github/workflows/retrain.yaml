@@ -70,7 +70,6 @@ jobs:
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --model-uri runs:/$(cat run_id.txt)/model \
             --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
 
       - name: Push Docker Image

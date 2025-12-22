@@ -1,8 +1,0 @@
-mlflow
-fastapi
-uvicorn
-mlflow
-pandas
-scikit-learn
-prometheus-client
-psutil

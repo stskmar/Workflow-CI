@@ -1,3 +1,5 @@
+name: bank_marketing_rf
+
 entry_points:
   main:
     parameters:

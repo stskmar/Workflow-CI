@@ -70,7 +70,6 @@ jobs:
         run: |
           mlflow models build-docker \
             --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
-            --run-id $RUN_ID
 
       - name: Push Docker Image
         run: |

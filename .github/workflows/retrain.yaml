@@ -34,15 +34,14 @@ jobs:
 
       - name: Run mlflow project
         env:
-          MLFLOW_TRACKING_URI: file:./mlruns
+          MLFLOW_TRACKING_URI: ${{ github.workspace }}/mlruns
         run: |
           mlflow run MLProject --env-manager=local --experiment-name bank_marketing_rf
 
       - name: Get latest MLflow run_id
         run: |
-          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          RUN_ID=$(ls -td ${{ github.workspace }}/mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id: $RUN_ID"
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

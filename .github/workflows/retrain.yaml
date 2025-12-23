@@ -32,16 +32,14 @@ jobs:
         run: |
           pip install mlflow scikit-learn pandas numpy
 
-      # Run as a mlflow project
       - name: Run mlflow project
         run: |
-          mlflow run MLProject --env-manager=local --experiment-name bank_marketing_rf
+          mlflow run MLProject --env-manager=local --experiment-id bank_marketing_rf
 
-      # Get latest run_id
       - name: Get latest RUN_ID
         run: |
           RUN_ID=$(mlflow runs list \
-            --experiment-name bank_marketing_rf \
+            --experiment-id bank_marketing_rf \
             --max-results 1 \
             --output-format json | jq -r '.[0].run_id')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
@@ -60,6 +58,7 @@ jobs:
           else
             echo "TOKEN EXISTS"
           fi          
+
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \

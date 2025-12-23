@@ -15,53 +15,31 @@ if __name__ == "__main__":
     n_estimators = int(sys.argv[1]) if len(sys.argv) > 1 else 100
     max_depth = int(sys.argv[2]) if len(sys.argv) > 2 else None
 
-    file_path = (
-        sys.argv[3]
-        if len(sys.argv) > 3
-        else os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "bank_clean.csv"
-        )
-    )
-
-    df = pd.read_csv(file_path)
-
+    df = pd.read_csv("bank_clean.csv")
     X = df.drop("y", axis=1)
     y = df["y"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X,
-        y,
-        test_size=0.2,
-        random_state=42,
-        stratify=y
+        X, y, test_size=0.2, random_state=42, stratify=y
     )
 
     input_example = X_train.iloc[:5]
 
     mlflow.set_experiment("bank_marketing_rf")
 
-    with mlflow.start_run():
-        model = RandomForestClassifier(
-            n_estimators=n_estimators,
-            max_depth=max_depth,
-            random_state=42
-        )
+    model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth, random_state=42)
+    model.fit(X_train, y_train)
 
-        model.fit(X_train, y_train)
+    accuracy = model.score(X_test, y_test)
 
-        accuracy = model.score(X_test, y_test)
+    mlflow.log_param("n_estimators", n_estimators)
+    mlflow.log_param("max_depth", max_depth)
+    mlflow.log_metric("accuracy", accuracy)
 
-        # Log params & metrics
-        mlflow.log_param("n_estimators", n_estimators)
-        mlflow.log_param("max_depth", max_depth)
-        mlflow.log_metric("accuracy", accuracy)
+    mlflow.sklearn.log_model(
+        sk_model=model,
+        artifact_path="model",
+        input_example=input_example
+    )
 
-        # Log model
-        mlflow.sklearn.log_model(
-            sk_model=model,
-            artifact_path="model",
-            input_example=input_example
-        )
-
-        print(f"Accuracy: {accuracy}")
+    print(f"Training completed. Accuracy: {accuracy}")

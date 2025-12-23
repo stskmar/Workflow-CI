@@ -35,9 +35,9 @@ jobs:
       - name: Train model with MLflow
         env:
           MLFLOW_TRACKING_URI: file:./mlruns
-          MLFLOW_EXPERIMENT_NAME: ci-retrain
+          MLFLOW_EXPERIMENT_NAME: bank_marketing_rf
         run: |
-          python MLProject/modelling.py
+          mlflow run MLproject --env-manager=local
 
       - name: Get RUN_ID from mlruns folder
         run: |

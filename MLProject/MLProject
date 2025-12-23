@@ -1,21 +1,17 @@
-name: bank_marketing_rf
-
-conda_env: conda.yaml
-
 entry_points:
   main:
     parameters:
       n_estimators:
         type: int
-        default: 100
+        default: 200
       max_depth:
         type: int
-        default: 10
+        default: 15
       data_path:
         type: path
-        default: bank_clean.csv
+        default: MLProject/bank_clean.csv
     command: >
-      python modelling.py
+      python MLProject/modelling.py
       {n_estimators}
       {max_depth}
       {data_path}

@@ -35,7 +35,7 @@ jobs:
       # Run as a mlflow project
       - name: Run mlflow project
         run: |
-          mlflow run MLProject --env-manager=local 
+          mlflow run MLProject --env-manager=local --experiment-name bank_marketing_rf
 
       # Get latest run_id
       - name: Get latest MLflow run_id

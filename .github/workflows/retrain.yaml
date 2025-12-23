@@ -31,19 +31,17 @@ jobs:
       - name: Install dependency
         run: |
           pip install mlflow scikit-learn pandas numpy
-
       - name: Train model with MLflow
         env:
           MLFLOW_TRACKING_URI: file:./mlruns
-          MLFLOW_EXPERIMENT_NAME: bank_marketing_rf
+          MLFLOW_EXPERIMENT_NAME: ci-retrain
         run: |
-          mlflow run MLProject --env-manager=local 
+          mlflow run MLProject -P n_estimators=200 -P max_depth=15 -P data_path=MLProject/bank_clean.csv
 
       - name: Get RUN_ID from mlruns folder
         run: |
           RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
           echo "RUN_ID=$RUN_ID"
-
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -58,17 +56,14 @@ jobs:
           else
             echo "TOKEN EXISTS"
           fi          
-
       - name: Login to Docker Hub
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login \
             -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
-
+            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
       - name: Push Docker Image
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow

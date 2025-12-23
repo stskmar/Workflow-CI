@@ -38,11 +38,13 @@ jobs:
           mlflow run MLProject --env-manager=local --experiment-name bank_marketing_rf
 
       # Get latest run_id
-      - name: Get latest MLflow run_id
+      - name: Get latest RUN_ID
         run: |
-          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          RUN_ID=$(mlflow runs list \
+            --experiment-name bank_marketing_rf \
+            --max-results 1 \
+            --output-format json | jq -r '.[0].run_id')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-          echo "Latest run_id: $RUN_ID"
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

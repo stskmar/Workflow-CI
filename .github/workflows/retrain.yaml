@@ -31,17 +31,19 @@ jobs:
       - name: Install dependency
         run: |
           pip install mlflow scikit-learn pandas numpy
-      - name: Train model with MLflow
-        env:
-          MLFLOW_TRACKING_URI: file:./mlruns
-          MLFLOW_EXPERIMENT_NAME: ci-retrain
-        run: |
-          mlflow run MLProject -P n_estimators=200 -P max_depth=15 -P data_path=MLProject/bank_clean.csv
 
-      - name: Get RUN_ID from mlruns folder
+      # Run as a mlflow project
+      - name: Run mlflow project
         run: |
-          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
-          echo "RUN_ID=$RUN_ID"
+          mlflow run MLproject --env-manager=local 
+
+      # Get latest run_id
+      - name: Get latest MLflow run_id
+        run: |
+          RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          echo "Latest run_id: $RUN_ID"
+
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4
         with:

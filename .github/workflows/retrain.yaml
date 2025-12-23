@@ -37,7 +37,7 @@ jobs:
           MLFLOW_TRACKING_URI: file:./mlruns
           MLFLOW_EXPERIMENT_NAME: bank_marketing_rf
         run: |
-          mlflow run MLproject --env-manager=local
+          mlflow run MLProject
 
       - name: Get RUN_ID from mlruns folder
         run: |

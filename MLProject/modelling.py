@@ -7,7 +7,7 @@ import mlflow.sklearn
 mlflow.set_experiment("bank_marketing_rf")
 
 with mlflow.start_run():
-    df = pd.read_csv("MLProject/preprocessing/bank_clean.csv")
+    df = pd.read_csv("MLProject/bank_clean.csv")
 
     X = df.drop("y", axis=1)
     y = df["y"]

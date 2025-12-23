@@ -11,7 +11,7 @@ entry_points:
         type: path
         default: MLProject/bank_clean.csv
     command: >
-      python MLProject/modelling.py
+      python modelling.py
       {n_estimators}
       {max_depth}
       {data_path}

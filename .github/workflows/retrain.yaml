@@ -33,15 +33,14 @@ jobs:
           pip install mlflow scikit-learn pandas numpy
 
       - name: Run mlflow project
+        env:
+          MLFLOW_TRACKING_URI: ${{ github.workspace }}/mlruns
         run: |
-          mlflow run MLProject --env-manager=local --experiment-id bank_marketing_rf
+          mlflow run MLProject --env-manager=local --experiment-name bank_marketing_rf --run-id-file run_id.txt
 
       - name: Get latest RUN_ID
         run: |
-          RUN_ID=$(mlflow runs list \
-            --experiment-id bank_marketing_rf \
-            --max-results 1 \
-            --output-format json | jq -r '.[0].run_id')
+          RUN_ID=$(cat run_id.txt)
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
       - name: Upload MLflow artifacts

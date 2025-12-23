@@ -43,8 +43,8 @@ jobs:
 
       - name: Get RUN_ID from mlruns folder
         run: |
-          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
-          echo "RUN_ID=$RUN_ID"
+          RUN_ID=$(mlflow runs list --experiment-name bank_marketing_rf --max-results 1 --output-format json | jq -r '.[0].run_id')
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

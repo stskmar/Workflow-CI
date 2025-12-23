@@ -34,17 +34,15 @@ jobs:
 
       - name: Train model with MLflow
         env:
-          MLFLOW_TRACKING_URI: file:${{ github.workspace }}/mlruns
+          MLFLOW_TRACKING_URI: file:./mlruns
           MLFLOW_EXPERIMENT_NAME: bank_marketing_rf
         run: |
-          mlflow run MLProject \
-            -P n_estimators=200 \
-            -P max_depth=15 \
+          mlflow run MLproject --env-manager=local 
 
       - name: Get RUN_ID from mlruns folder
         run: |
-          RUN_ID=$(mlflow runs list --experiment-name bank_marketing_rf --max-results 1 --output-format json | jq -r '.[0].run_id')
-          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+          RUN_ID=$(ls -td mlruns/*/* | head -n 1 | awk -F'/' '{print $(NF)}')
+          echo "RUN_ID=$RUN_ID"
 
       - name: Upload MLflow artifacts
         uses: actions/upload-artifact@v4

@@ -34,7 +34,7 @@ jobs:
 
       - name: Train model with MLflow
         env:
-          MLFLOW_TRACKING_URI: file:./mlruns
+          MLFLOW_TRACKING_URI: file:${{ github.workspace }}/mlruns
           MLFLOW_EXPERIMENT_NAME: bank_marketing_rf
         run: |
           mlflow run MLProject \
@@ -69,7 +69,8 @@ jobs:
       - name: Build Docker Image with MLflow
         run: |
           mlflow models build-docker \
-            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow
+            --name ${{ secrets.DOCKERHUB_USERNAME }}/workflow-ci-mlflow \
+            --run-id $RUN_ID
 
       - name: Push Docker Image
         run: |

@@ -40,7 +40,7 @@ jobs:
 
       - name: Get latest RUN_ID
         run: |
-          EXPERIMENT_ID=$(mlflow experiments list | grep bank_marketing_rf | awk '{print $1}')
+          EXPERIMENT_ID=$(mlflow runs list | grep bank_marketing_rf | awk '{print $1}')
           RUN_ID=$(mlflow runs list --experiment-id $EXPERIMENT_ID --max-results 1 --output-format json | jq -r '.[0].run_id')
           echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
 
